@@ -63,6 +63,55 @@ export async function signup(req, res) {
   }
 }
 
+export async function forgotPassword(req, res) {
+  try {
+    const { email, newpass } = req.body;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Please enter email" });
+    }
+
+    if (!newpass) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Please enter new password" });
+    }
+
+    if (!connection) {
+      connection = await connectDB();
+    }
+
+    const [user_id] = await connection.query(
+      "SELECT users_id FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (user_id.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, msg: "User with this email does not exist" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newpass, salt);
+
+    await connection.query("UPDATE users SET password = ? WHERE users_id = ?", [
+      hashedPassword,
+      user_id[0].users_id,
+    ]);
+
+    res.status(200).json({
+      success: true,
+      msg: "Reset password Successful, Please login with new password",
+    });
+  } catch (error) {
+    console.log("Error in forgotPassword", error.message);
+    res.status(500).send("Server Error");
+  }
+}
+
 export async function login(req, res) {
   try {
     const { email, password } = req.body;

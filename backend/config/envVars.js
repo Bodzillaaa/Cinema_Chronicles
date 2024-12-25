@@ -9,4 +9,5 @@ export const ENV_VARS = {
   DB_HOST: process.env.DB_HOST,
   PORT: process.env.PORT || 5000,
   JWT_SECRET: process.env.JWT_SECRET,
+  ADMIN_PASS: process.env.ADMIN_PASS,
 };

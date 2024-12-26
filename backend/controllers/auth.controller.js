@@ -60,8 +60,7 @@ export async function adminSignup(req, res) {
       [email, fname, lname, hashedPassword, dob, "admin"]
     );
 
-    generateTokenAndSetCookie(newAdmin._id, res);
-
+    generateTokenAndSetCookie(newAdmin.insertId, res);
     res
       .status(201)
       .json({ success: true, msg: "Admin registered successfully" });
@@ -86,14 +85,20 @@ export async function adminLogin(req, res) {
     }
 
     const [admin] = await connection.query(
-      "SELECT * FROM users WHERE email = ? AND role = ?",
-      [email, "admin"]
+      "SELECT * FROM users WHERE email = ?",
+      [email]
     );
 
     if (admin.length === 0) {
       return res
         .status(404)
         .json({ success: false, msg: "Invalid credentials" });
+    }
+
+    if (admin[0].role !== "admin") {
+      return res
+        .status(404)
+        .json({ success: false, msg: "You're not an Admin" });
     }
 
     const isMatch = await bcrypt.compare(password, admin[0].password);
@@ -104,20 +109,10 @@ export async function adminLogin(req, res) {
         .json({ success: false, msg: "Invalid credentials" });
     }
 
-    generateTokenAndSetCookie(admin[0].id, res);
+    generateTokenAndSetCookie(admin[0].users_id, res);
     res.status(200).json({ success: true, msg: "Logged in successfully" });
   } catch (error) {
     console.log("Error in adminLogin", error.message);
-    res.status(500).send("Server Error");
-  }
-}
-
-export async function adminLogout(req, res) {
-  try {
-    res.clearCookie("jwt-cinema-chronicles");
-    res.status(200).json({ success: true, msg: "Logged out successfully " });
-  } catch (error) {
-    console.log("Error in adminLogout", error.message);
     res.status(500).send("Server Error");
   }
 }
@@ -168,11 +163,11 @@ export async function signup(req, res) {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const [newUser] = await connection.query(
-      "INSERT INTO users (email, first_name, last_name, password, dob, role) VALUES (?, ?, ?, ?, ?)",
-      [email, fname, lname, hashedPassword, dob, "admin"]
+      "INSERT INTO users (email, first_name, last_name, password, dob, role) VALUES (?, ?, ?, ?, ?, ?)",
+      [email, fname, lname, hashedPassword, dob, "user"]
     );
 
-    generateTokenAndSetCookie(newUser._id, res);
+    generateTokenAndSetCookie(newUser.insertId, res);
 
     res
       .status(201)
@@ -216,7 +211,7 @@ export async function login(req, res) {
         .json({ success: false, msg: "Invalid credentials" });
     }
 
-    generateTokenAndSetCookie(user[0].id, res);
+    generateTokenAndSetCookie(user[0].users_id, res);
     res.status(200).json({ success: true, msg: "Logged in successfully" });
   } catch (error) {
     console.log("Error in login", error.message);
@@ -254,12 +249,12 @@ export async function forgotPassword(req, res) {
       connection = await connectDB();
     }
 
-    const [user_id] = await connection.query(
+    const [user] = await connection.query(
       "SELECT users_id FROM users WHERE email = ?",
       [email]
     );
 
-    if (user_id.length === 0) {
+    if (user.length === 0) {
       return res
         .status(404)
         .json({ success: false, msg: "User with this email does not exist" });
@@ -270,7 +265,7 @@ export async function forgotPassword(req, res) {
 
     await connection.query("UPDATE users SET password = ? WHERE users_id = ?", [
       hashedPassword,
-      user_id[0].users_id,
+      user[0].users_id,
     ]);
 
     res.status(200).json({

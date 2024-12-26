@@ -60,7 +60,6 @@ export async function adminSignup(req, res) {
       [email, fname, lname, hashedPassword, dob, "admin"]
     );
 
-    generateTokenAndSetCookie(newAdmin.insertId, res);
     res
       .status(201)
       .json({ success: true, msg: "Admin registered successfully" });
@@ -166,8 +165,6 @@ export async function signup(req, res) {
       "INSERT INTO users (email, first_name, last_name, password, dob, role) VALUES (?, ?, ?, ?, ?, ?)",
       [email, fname, lname, hashedPassword, dob, "user"]
     );
-
-    generateTokenAndSetCookie(newUser.insertId, res);
 
     res
       .status(201)

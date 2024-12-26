@@ -32,8 +32,6 @@ export const protectRoute = async (req, res, next) => {
       [decoded.userId]
     );
 
-    console.log(user);
-
     if (!user || user.length === 0) {
       return res.status(404).json({
         success: false,

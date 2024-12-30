@@ -2,15 +2,26 @@ import { connectDB } from "../config/db.js";
 
 let connection;
 
-export async function postRating(req, res) {
+export async function postFeedback(req, res) {
   const movie_id = req.params.id;
-  const { rating } = req.body;
+  const { rating, review } = req.body;
   const user_id = req.user.users_id;
-  console.log(user_id);
 
   try {
     if (!connection) {
       connection = await connectDB();
+    }
+
+    if (!rating) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Rating is required" });
+    }
+
+    if (rating < 0 || rating > 10) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Rating must be between 0 and 10" });
     }
 
     const [ratingExists] = await connection.query(
@@ -20,13 +31,13 @@ export async function postRating(req, res) {
 
     if (ratingExists.length > 0) {
       await connection.query(
-        "UPDATE reviews SET rating = ? WHERE movie_id = ? AND user_id = ?",
-        [rating, movie_id, user_id]
+        "UPDATE reviews SET rating = ?, review = ? WHERE movie_id = ? AND user_id = ?",
+        [rating, review, movie_id, user_id]
       );
     } else {
       await connection.query(
-        "INSERT INTO reviews (movie_id, user_id, rating) VALUES (?, ?, ?)",
-        [movie_id, user_id, rating]
+        "INSERT INTO reviews (movie_id, user_id, rating, review) VALUES (?, ?, ?, ?)",
+        [movie_id, user_id, rating, review]
       );
     }
 
@@ -37,36 +48,44 @@ export async function postRating(req, res) {
   }
 }
 
-export async function postReview(req, res) {
-  const movie_id = req.params.id;
-  const { review } = req.body;
-  const user_id = req.user.users_id;
+export async function getWatchlist(req, res) {
+  try {
+    if (!connection) {
+      connection = await connectDB();
+    }
+
+    const [result] = await connection.query(
+      `SELECT * FROM watchlist WHERE user_id = ?`,
+      [req.user.users_id]
+    );
+
+    res.status(200).json({ success: true, content: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+}
+
+export async function deleteItemFromWatchlist(req, res) {
+  const { id } = req.params;
 
   try {
     if (!connection) {
       connection = await connectDB();
     }
 
-    const [reviewExists] = await connection.query(
-      "SELECT * FROM reviews WHERE movie_id = ? AND user_id = ?",
-      [movie_id, user_id]
+    const [result] = await connection.query(
+      `DELETE FROM watchlist WHERE watchlist_id = ? AND user_id = ?`,
+      [id, req.user.users_id]
     );
 
-    if (reviewExists.length > 0) {
-      await connection.query(
-        "UPDATE reviews SET review = ? WHERE movie_id = ? AND user_id = ?",
-        [review, movie_id, user_id]
-      );
-    } else {
-      await connection.query(
-        "INSERT INTO reviews (movie_id, user_id, review) VALUES (?, ?, ?)",
-        [movie_id, user_id, review]
-      );
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Item not found");
     }
 
-    res.status(200).json({ success: true, msg: "Review submitted" });
+    res.status(200).json({ success: true, message: "Item removed" });
   } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Server Error");
+    console.error(error);
+    res.status(500).send("Server error");
   }
 }

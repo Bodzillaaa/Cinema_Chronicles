@@ -28,7 +28,7 @@ export const protectRoute = async (req, res, next) => {
     }
 
     const [user] = await connection.query(
-      "SELECT * FROM users WHERE users_id = ?",
+      "SELECT users_id, email, first_name, last_name, role FROM users WHERE users_id = ?",
       [decoded.userId]
     );
 

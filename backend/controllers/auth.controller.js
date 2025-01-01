@@ -13,13 +13,13 @@ export async function adminSignup(req, res) {
     if (!email || !adminPass || !fname || !lname || !password || !dob) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please enter all fields" });
+        .json({ success: false, message: "Please enter all fields" });
     }
 
     if (adminPass !== process.env.ADMIN_PASS) {
       return res
         .status(400)
-        .json({ success: false, msg: "Invalid Admin Password" });
+        .json({ success: false, message: "Invalid Admin Password" });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,13 +27,13 @@ export async function adminSignup(req, res) {
     if (!emailRegex.test(email)) {
       return res
         .status(400)
-        .json({ success: false, msg: "Invalid email address" });
+        .json({ success: false, message: "Invalid email address" });
     }
 
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        msg: "Password must be at least 6 characters",
+        message: "Password must be at least 6 characters",
       });
     }
 
@@ -49,20 +49,27 @@ export async function adminSignup(req, res) {
     if (existingUser.length > 0) {
       return res
         .status(400)
-        .json({ success: false, msg: "User email already exists" });
+        .json({ success: false, message: "User email already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const [newAdmin] = await connection.query(
+    const [newAdminResult] = await connection.query(
       "INSERT INTO users (email, first_name, last_name, password, dob, role) VALUES (?, ?, ?, ?, ?, ?)",
       [email, fname, lname, hashedPassword, dob, "admin"]
     );
 
-    res
-      .status(201)
-      .json({ success: true, msg: "Admin registered successfully" });
+    const [newAdmin] = await connection.query(
+      "SELECT * FROM users WHERE users_id = ?",
+      [newAdminResult.insertId]
+    );
+
+    res.status(201).json({
+      success: true,
+      user: { ...newAdmin[0], password: "" },
+      message: "Admin registered successfully",
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
@@ -76,7 +83,7 @@ export async function adminLogin(req, res) {
     if (!email || !password) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please enter all fields" });
+        .json({ success: false, message: "Please enter all fields" });
     }
 
     if (!connection) {
@@ -91,13 +98,13 @@ export async function adminLogin(req, res) {
     if (admin.length === 0) {
       return res
         .status(404)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     if (admin[0].role !== "admin") {
       return res
         .status(404)
-        .json({ success: false, msg: "You're not an Admin" });
+        .json({ success: false, message: "You're not an Admin" });
     }
 
     const isMatch = await bcrypt.compare(password, admin[0].password);
@@ -105,11 +112,15 @@ export async function adminLogin(req, res) {
     if (!isMatch) {
       return res
         .status(404)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     generateTokenAndSetCookie(admin[0].users_id, res);
-    res.status(200).json({ success: true, msg: "Logged in successfully" });
+    res.status(201).json({
+      success: true,
+      user: { ...admin[0], password: "" },
+      message: "Admin Logged in successfully",
+    });
   } catch (error) {
     console.log("Error in adminLogin", error.message);
     res.status(500).send("Server Error");
@@ -122,10 +133,10 @@ export async function signup(req, res) {
   try {
     const { email, fname, lname, password, dob } = req.body;
 
-    if (!email || !fname || !lname || !password || !dob) {
+    if (!email || !fname || !password || !dob) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please enter all fields" });
+        .json({ success: false, message: "Please enter all fields" });
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -133,13 +144,13 @@ export async function signup(req, res) {
     if (!emailRegex.test(email)) {
       return res
         .status(400)
-        .json({ success: false, msg: "Invalid email address" });
+        .json({ success: false, message: "Invalid email address" });
     }
 
     if (password.length < 6) {
       return res.status(400).json({
         success: false,
-        msg: "Password must be at least 6 characters",
+        message: "Password must be at least 6 characters",
       });
     }
 
@@ -155,20 +166,27 @@ export async function signup(req, res) {
     if (existingUser.length > 0) {
       return res
         .status(400)
-        .json({ success: false, msg: "User email already exists" });
+        .json({ success: false, message: "User email already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const [newUser] = await connection.query(
+    const [newUserResult] = await connection.query(
       "INSERT INTO users (email, first_name, last_name, password, dob, role) VALUES (?, ?, ?, ?, ?, ?)",
       [email, fname, lname, hashedPassword, dob, "user"]
     );
 
-    res
-      .status(201)
-      .json({ success: true, msg: "User registered successfully" });
+    const [newUser] = await connection.query(
+      "SELECT * FROM users WHERE users_id = ?",
+      [newUserResult.insertId]
+    );
+
+    res.status(201).json({
+      success: true,
+      user: { ...newUser[0], password: "" },
+      message: "User registered successfully",
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
@@ -182,7 +200,7 @@ export async function login(req, res) {
     if (!email || !password) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please enter all fields" });
+        .json({ success: false, message: "Please enter all fields" });
     }
 
     if (!connection) {
@@ -197,7 +215,7 @@ export async function login(req, res) {
     if (user.length === 0) {
       return res
         .status(404)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     const isMatch = await bcrypt.compare(password, user[0].password);
@@ -205,11 +223,15 @@ export async function login(req, res) {
     if (!isMatch) {
       return res
         .status(404)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ success: false, message: "Wrong password" });
     }
 
     generateTokenAndSetCookie(user[0].users_id, res);
-    res.status(200).json({ success: true, msg: "Logged in successfully" });
+    res.status(201).json({
+      success: true,
+      user: { ...user[0], password: "" },
+      message: "User Logged in successfully",
+    });
   } catch (error) {
     console.log("Error in login", error.message);
     res.status(500).send("Server Error");
@@ -219,7 +241,9 @@ export async function login(req, res) {
 export async function logout(req, res) {
   try {
     res.clearCookie("jwt-cinema-chronicles");
-    res.status(200).json({ success: true, msg: "Logged out successfully " });
+    res
+      .status(200)
+      .json({ success: true, message: "Logged out successfully " });
   } catch (error) {
     console.log("Error in logout", error.message);
     res.status(500).send("Server Error");
@@ -233,13 +257,13 @@ export async function forgotPassword(req, res) {
     if (!email) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please enter email" });
+        .json({ success: false, message: "Please enter email" });
     }
 
     if (!newpass) {
       return res
         .status(400)
-        .json({ success: false, msg: "Please enter new password" });
+        .json({ success: false, message: "Please enter new password" });
     }
 
     if (!connection) {
@@ -252,9 +276,10 @@ export async function forgotPassword(req, res) {
     );
 
     if (user.length === 0) {
-      return res
-        .status(404)
-        .json({ success: false, msg: "User with this email does not exist" });
+      return res.status(404).json({
+        success: false,
+        message: "User with this email does not exist",
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -267,10 +292,19 @@ export async function forgotPassword(req, res) {
 
     res.status(200).json({
       success: true,
-      msg: "Reset password Successful, Please login with new password",
+      message: "Reset password Successful, Please login with new password",
     });
   } catch (error) {
     console.log("Error in forgotPassword", error.message);
+    res.status(500).send("Server Error");
+  }
+}
+
+export async function authCheck(req, res) {
+  try {
+    res.status(200).json({ success: true, user: req.user });
+  } catch (error) {
+    console.log("Error in authCheck", error.message);
     res.status(500).send("Server Error");
   }
 }

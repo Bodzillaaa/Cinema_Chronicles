@@ -17,9 +17,37 @@ export const useAuthUser = create((set) => ({
     } catch (error) {
       toast.error(error.response.data.message || "Sign Up failed");
       set({ isSigningUp: false, user: null });
+    }
+  },
+
+  adminSignup: async (credentials) => {
+    try {
+      set({ isSigningUp: true });
+      const response = await axios.post("/api/auth/adminsignup", credentials);
+      set({ user: response.data, isSigningUp: false });
+      toast.success(
+        response.data.message || "Admin Account Created successfully"
+      );
+    } catch (error) {
+      toast.error(error.response.data.message || "Admin Sign Up failed");
+      set({ isSigningUp: false, user: null });
+      console.log(error.response.data);
+    }
+  },
+
+  adminLogin: async (credentials) => {
+    set({ isLoggingIn: true });
+    try {
+      const response = await axios.post("/api/auth/adminlogin", credentials);
+      set({ user: response.data, isLoggingIn: false });
+      toast.success(response.data.message || "Admin Logged in successfully");
+    } catch (error) {
+      toast.error(error.response.data.message || "Login failed");
+      set({ user: null, isLoggingIn: false });
       console.log(error);
     }
   },
+
   login: async (credentials) => {
     set({ isLoggingIn: true });
     try {
@@ -44,6 +72,20 @@ export const useAuthUser = create((set) => ({
       console.log(error);
     }
   },
+
+  forgotPassword: async (credentials) => {
+    try {
+      const response = await axios.post(
+        "/api/auth/forgotpassword",
+        credentials
+      );
+      toast.success(response.data.message || "Password reset successful");
+    } catch (error) {
+      toast.error(error.response.data.message || "Password reset unsuccessful");
+      console.log(error);
+    }
+  },
+
   authCheck: async () => {
     set({ isCheckingAuth: true });
     try {

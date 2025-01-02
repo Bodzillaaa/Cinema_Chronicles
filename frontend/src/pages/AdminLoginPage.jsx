@@ -10,15 +10,18 @@ import { Field } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAuthUser } from "../store/authUser";
 
 const AdminLoginPage = () => {
   const [adminPassword, setAdminPassword] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { adminLogin } = useAuthUser();
+
   const handleSignUp = (e) => {
     e.preventDefault();
-    console.log(email, password);
+    adminLogin({ adminPass: adminPassword, email, password });
   };
 
   return (
@@ -32,7 +35,7 @@ const AdminLoginPage = () => {
       <AbsoluteCenter>
         <Box
           w={{ base: "90%", md: "600px" }}
-          h={{ base: "auto", md: "650px" }}
+          h={{ base: "auto", md: "550px" }}
           bg={"black/40"}
           rounded={"2xl"}
           p={{ base: 4, md: 8 }}
@@ -80,12 +83,6 @@ const AdminLoginPage = () => {
                 <Button type="submit" colorPalette={"cyan"}>
                   Register
                 </Button>
-              </Box>
-              <Box mt={5} textAlign={"center"}>
-                Forgot password?{" "}
-                <Link to={"/forgotpassword"} style={{ color: "cyan" }}>
-                  Click here
-                </Link>
               </Box>
               <Box textAlign={"center"}>
                 Not a member?{" "}

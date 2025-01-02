@@ -10,7 +10,7 @@ export async function adminSignup(req, res) {
   try {
     const { email, fname, lname, adminPass, password, dob } = req.body;
 
-    if (!email || !adminPass || !fname || !lname || !password || !dob) {
+    if (!email || !adminPass || !fname || !password || !dob) {
       return res
         .status(400)
         .json({ success: false, message: "Please enter all fields" });
@@ -78,12 +78,18 @@ export async function adminSignup(req, res) {
 
 export async function adminLogin(req, res) {
   try {
-    const { email, password } = req.body;
+    const { adminPass, email, password } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password || !adminPass) {
       return res
         .status(400)
         .json({ success: false, message: "Please enter all fields" });
+    }
+
+    if (adminPass !== process.env.ADMIN_PASS) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid Admin Password" });
     }
 
     if (!connection) {
@@ -98,7 +104,7 @@ export async function adminLogin(req, res) {
     if (admin.length === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "Invalid credentials" });
+        .json({ success: false, message: "Email or Password didn't match" });
     }
 
     if (admin[0].role !== "admin") {

@@ -11,6 +11,7 @@ import { Field } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAuthUser } from "../store/authUser";
 
 const AdminSignUpPage = () => {
   const [adminPassword, setAdminPassword] = useState("");
@@ -20,9 +21,18 @@ const AdminSignUpPage = () => {
   const [password, setPassword] = useState("");
   const [dob, setDob] = useState("");
 
+  const { adminSignup } = useAuthUser();
+
   const handleSignUp = (e) => {
     e.preventDefault();
-    console.log(adminPassword, email, fname, lname, password, dob);
+    adminSignup({
+      adminPass: adminPassword,
+      email,
+      fname,
+      lname,
+      password,
+      dob,
+    });
   };
 
   return (

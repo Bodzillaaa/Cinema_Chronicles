@@ -9,10 +9,11 @@ import { Toaster } from "react-hot-toast";
 import { useAuthUser } from "./store/authUser";
 import { useEffect } from "react";
 import { Box, AbsoluteCenter, Spinner } from "@chakra-ui/react";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const { user, isCheckingAuth, authCheck } = useAuthUser();
-  console.log("Auth user: ", user);
+  const userRole = user?.user?.role;
 
   useEffect(() => {
     authCheck();
@@ -31,7 +32,9 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={!user ? <SignUpPage /> : <HomePage />} />
+        {/* User route */}
+
+        <Route path="/" element={!user ? <LoginPage /> : <HomePage />} />
         <Route
           path="/signup"
           element={!user ? <SignUpPage /> : <Navigate to={"/"} />}
@@ -40,10 +43,42 @@ function App() {
           path="/login"
           element={!user ? <LoginPage /> : <Navigate to={"/"} />}
         />
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
 
-        <Route path="/adminsignup" element={<AdminSignUpPage />} />
-        <Route path="/adminlogin" element={<AdminLoginPage />} />
+        {/* Admin route */}
+
+        <Route
+          path="/adminsignup"
+          element={
+            !user || userRole !== "admin" ? (
+              <AdminSignUpPage />
+            ) : (
+              <AdminDashboard />
+            )
+          }
+        />
+        <Route
+          path="/adminlogin"
+          element={
+            !user || userRole !== "admin" ? (
+              <AdminLoginPage />
+            ) : (
+              <AdminDashboard />
+            )
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            !user || userRole !== "admin" ? (
+              <AdminLoginPage />
+            ) : (
+              <AdminDashboard />
+            )
+          }
+        />
+        {/* Forgot pass route */}
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
       </Routes>
 
       <Toaster />

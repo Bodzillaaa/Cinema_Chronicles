@@ -10,6 +10,11 @@ import { useAuthUser } from "./store/authUser";
 import { useEffect } from "react";
 import { Box, AbsoluteCenter, Spinner } from "@chakra-ui/react";
 import AdminDashboard from "./pages/AdminDashboard";
+import { useColorModeValue } from "@/components/ui/color-mode";
+import MovieDetails from "./pages/MovieDetails";
+import TrendingMovie from "./pages/TrendingMovie";
+import SearchPage from "./pages/SearchPage";
+import WatchList from "./pages/WatchList";
 
 function App() {
   const { user, isCheckingAuth, authCheck } = useAuthUser();
@@ -18,6 +23,8 @@ function App() {
   useEffect(() => {
     authCheck();
   }, [authCheck]);
+
+  const bgColor = useColorModeValue("white", "black");
 
   if (isCheckingAuth) {
     return (
@@ -30,11 +37,11 @@ function App() {
   }
 
   return (
-    <>
+    <Box minH={"100vh"} bg={bgColor}>
       <Routes>
-        {/* User route */}
-
         <Route path="/" element={!user ? <LoginPage /> : <HomePage />} />
+
+        {/* User route */}
         <Route
           path="/signup"
           element={!user ? <SignUpPage /> : <Navigate to={"/"} />}
@@ -79,10 +86,19 @@ function App() {
         />
         {/* Forgot pass route */}
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/api/movie/details/:id" element={<MovieDetails />} />
+        <Route path="/api/movie/trending" element={<TrendingMovie />} />
+
+        <Route
+          path="/api/search/movie/:query"
+          element={user ? <SearchPage /> : <Navigate to="/login" />}
+        />
+
+        <Route path="/api/user/watchlist" element={<WatchList />}></Route>
       </Routes>
 
       <Toaster />
-    </>
+    </Box>
   );
 }
 

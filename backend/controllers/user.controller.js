@@ -6,6 +6,7 @@ export async function postFeedback(req, res) {
   const movie_id = req.params.id;
   const { rating, review } = req.body;
   const user_id = req.user.users_id;
+  console.log("got called");
 
   try {
     if (!connection) {
@@ -66,6 +67,37 @@ export async function getWatchlist(req, res) {
   }
 }
 
+export async function addToWatchlist(req, res) {
+  const { id } = req.params;
+
+  try {
+    if (!connection) {
+      connection = await connectDB();
+    }
+
+    const [movieExists] = await connection.query(
+      `SELECT * FROM watchlist WHERE movie_id = ? AND user_id = ?`,
+      [id, req.user.users_id]
+    );
+
+    if (movieExists.length > 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Movie already in watchlist" });
+    }
+
+    const [result] = await connection.query(
+      `INSERT INTO watchlist (movie_id, user_id) VALUES (?, ?)`,
+      [id, req.user.users_id]
+    );
+
+    res.status(200).json({ success: true, message: "Added to Your Watchlist" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error");
+  }
+}
+
 export async function deleteItemFromWatchlist(req, res) {
   const { id } = req.params;
 
@@ -75,7 +107,7 @@ export async function deleteItemFromWatchlist(req, res) {
     }
 
     const [result] = await connection.query(
-      `DELETE FROM watchlist WHERE watchlist_id = ? AND user_id = ?`,
+      `DELETE FROM watchlist WHERE movie_id = ? AND user_id = ?`,
       [id, req.user.users_id]
     );
 

@@ -76,3 +76,29 @@ export async function getMovieDetails(req, res) {
     res.status(500).send("Server Error");
   }
 }
+
+export async function getDirectorDetails(req, res) {
+  const { id } = req.params;
+
+  try {
+    if (!connection) {
+      connection = await connectDB();
+    }
+
+    const [director] = await connection.query(
+      "SELECT * FROM directors WHERE director_id = ?",
+      [id]
+    );
+
+    if (director.length === 0) {
+      return res.status(404).json({ success: false, msg: "No director found" });
+    }
+
+    res.status(200).json({ success: true, director: director });
+  } catch (error) {
+    if (error.message.includes("404")) {
+      return res.status(404).send(null);
+    }
+    res.status(500).send("Server Error");
+  }
+}

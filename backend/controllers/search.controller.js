@@ -4,6 +4,11 @@ let connection;
 
 export async function searchMovie(req, res) {
   const query = req.params.query;
+  console.log("Query:", query);
+
+  if (!query || query.trim() === "") {
+    return res.status(400).json({ error: "Search query cannot be empty" });
+  }
 
   try {
     if (!connection) {
@@ -16,7 +21,7 @@ export async function searchMovie(req, res) {
     );
 
     if (result.length === 0) {
-      return res.status(404).send(null);
+      return res.status(404).json({ success: false, message: "Cholbe?" });
     }
 
     res.status(200).json({ success: true, content: result });

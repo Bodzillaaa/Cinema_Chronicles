@@ -1,11 +1,4 @@
-import {
-  Container,
-  Grid,
-  GridItem,
-  Heading,
-  Text,
-  Button,
-} from "@chakra-ui/react";
+import { Container, Grid, GridItem, Heading, Button } from "@chakra-ui/react";
 import Footer from "../components/ui/Footer";
 import Navbar from "../components/ui/Navbar";
 import { useAuthUser } from "../store/authUser";
@@ -14,6 +7,7 @@ import axios from "axios";
 import MovieCard from "../components/ui/MovieCard";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Trash2 } from "lucide-react";
 
 const WatchList = () => {
   const navigate = useNavigate();
@@ -78,14 +72,18 @@ const WatchList = () => {
         >
           {watchListMovies.map((movie, i) => {
             return (
-              <GridItem h={"full"} key={i}>
+              <GridItem h={"full"} position={"relative"} key={i}>
                 <MovieCard movie={movie[0]} />
                 <Button
-                  mt={4}
-                  colorScheme="red"
+                  position={"absolute"}
+                  size={"lg"}
+                  right={0}
+                  top={0}
+                  bg={"red.500"}
+                  color={"white"}
                   onClick={() => handleDelete(movie[0].movie_id)}
                 >
-                  Remove from Watchlist
+                  <Trash2 />
                 </Button>
               </GridItem>
             );

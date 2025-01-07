@@ -15,6 +15,8 @@ import MovieDetails from "./pages/MovieDetails";
 import TrendingMovie from "./pages/TrendingMovie";
 import SearchPage from "./pages/SearchPage";
 import WatchList from "./pages/WatchList";
+import AllUsers from "./pages/AllUsers";
+import AllMovies from "./pages/AllMovies";
 
 function App() {
   const { user, isCheckingAuth, authCheck } = useAuthUser();
@@ -44,7 +46,7 @@ function App() {
         {/* User route */}
         <Route
           path="/signup"
-          element={!user ? <SignUpPage /> : <Navigate to={"/"} />}
+          element={!user ? <SignUpPage /> : <Navigate to={"/login"} />}
         />
         <Route
           path="/login"
@@ -59,7 +61,7 @@ function App() {
             !user || userRole !== "admin" ? (
               <AdminSignUpPage />
             ) : (
-              <AdminDashboard />
+              <Navigate to="/adminlogin" />
             )
           }
         />
@@ -84,17 +86,32 @@ function App() {
             )
           }
         />
-        {/* Forgot pass route */}
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/api/movie/details/:id" element={<MovieDetails />} />
-        <Route path="/api/movie/trending" element={<TrendingMovie />} />
 
         <Route
-          path="/api/search/movie/:query"
+          path="/admin/users"
+          element={
+            !user || userRole !== "admin" ? <AdminLoginPage /> : <AllUsers />
+          }
+        />
+        <Route
+          path="/admin/movies"
+          element={
+            !user || userRole !== "admin" ? <AdminLoginPage /> : <AllMovies />
+          }
+        />
+        {/* <Route path="/admin/addmovie" element={<AllMovies />} /> */}
+
+        {/* Forgot pass route */}
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/details/:id" element={<MovieDetails />} />
+        <Route path="/trending" element={<TrendingMovie />} />
+
+        <Route
+          path="/:query"
           element={user ? <SearchPage /> : <Navigate to="/login" />}
         />
 
-        <Route path="/api/user/watchlist" element={<WatchList />}></Route>
+        <Route path="/watchlist" element={<WatchList />}></Route>
       </Routes>
 
       <Toaster />

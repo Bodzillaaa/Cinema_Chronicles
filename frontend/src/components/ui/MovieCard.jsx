@@ -12,17 +12,22 @@ const MovieCard = ({ movie }) => {
   const addToWatchlist = async () => {
     try {
       const res = await axios.post(`/api/user/watchlist/${movie.movie_id}`);
-      toast.success(res.data.message, "Movie added to watchlist.");
+      if (!res.data.success) {
+        toast.error("Movie added to watchlist.");
+      } else {
+        // alert("Failed to add movie to watchlist.");
+        toast.success(res.data.message);
+      }
     } catch (error) {
       console.error("Error adding movie to watchlist", error);
       // alert("Failed to add movie to watchlist.");
-      toast.error("Failed to add movie to watchlist.", error);
+      toast.error("Failed to add movie to watchlist.");
     }
   };
 
   return (
     <>
-      <Card.Root overflow="hidden" shadow={"xl"}>
+      <Card.Root h={"xl"} shadow={"xl"}>
         <Image
           src={movie.posterUrl || "/download.jpg"}
           alt={`${movie.title} poster`}
@@ -36,9 +41,6 @@ const MovieCard = ({ movie }) => {
           <Text textStyle="xs" mt="2">
             Duration: {movie.duration}
           </Text>
-          <Text textStyle="xs" mt="2">
-            Rating: {movie.rating || "5.0"}
-          </Text>
         </Card.Body>
         <Card.Footer gap="2">
           <Button
@@ -48,7 +50,7 @@ const MovieCard = ({ movie }) => {
           >
             Add to watchlist
           </Button>
-          <Link to={`api/movie/details/${movie.movie_id}`}>
+          <Link to={`/details/${movie.movie_id}`}>
             <Button bg={buttonBg}>Get Details</Button>
           </Link>
         </Card.Footer>

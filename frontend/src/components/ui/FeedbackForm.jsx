@@ -2,37 +2,44 @@
 import { useState } from "react";
 import axios from "axios";
 import { Box, Input, Button, Textarea } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const FeedbackForm = ({ movieId }) => {
   const [rating, setRating] = useState("");
   const [review, setReview] = useState("");
-  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post(`/api/movies/${movieId}/feedback`, {
+      console.log("got called");
+      console.log("movieId", movieId);
+      console.log(rating, review);
+
+      const response = await axios.post(`/api/user/rating/${movieId}`, {
         rating,
         review,
       });
-
       if (response.data.success) {
-        setMessage("Feedback submitted successfully!");
+        toast.success(response.data.msg || "Feedback submitted successfully!");
+        setTimeout(() => {
+          navigate("/"); // Redirect to home page
+        }, 2000); // Refresh the page
       } else {
-        setMessage(response.data.msg || "An error occurred.");
+        toast.error(response.data.msg || "An error occurred.");
       }
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      setMessage("Failed to submit feedback. Please try again later.");
+      toast.error("Failed to submit feedback. Please try again later.");
     }
   };
 
   return (
-    <Box bg="gray.100" p={5} rounded="md" shadow="md">
+    <Box mt={5} p={5} rounded="md" shadow="md">
       <form onSubmit={handleSubmit}>
         <Input
-          type="number"
+          type="float"
           placeholder="Rating (0-10)"
           value={rating}
           onChange={(e) => setRating(e.target.value)}
@@ -50,11 +57,6 @@ const FeedbackForm = ({ movieId }) => {
           Submit Feedback
         </Button>
       </form>
-      {message && (
-        <Box mt={3} color="green.500">
-          {message}
-        </Box>
-      )}
     </Box>
   );
 };

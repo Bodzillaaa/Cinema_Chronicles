@@ -1,7 +1,7 @@
 import express from "express";
 import {
+  getActorDetails,
   getAllMovies,
-  getDirectorDetails,
   getMovieDetails,
   getTrendingMovie,
 } from "../controllers/movie.controller.js";
@@ -12,6 +12,6 @@ router.get("/trending", getTrendingMovie);
 router.get("/", getAllMovies);
 
 router.get("/details/:id", getMovieDetails);
-router.get("/director/:id", getDirectorDetails);
+router.get("/actor/:id", getActorDetails);
 
 export default router;

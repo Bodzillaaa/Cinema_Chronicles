@@ -7,18 +7,19 @@ import {
   Image,
   Text,
   VStack,
-  Spinner,
   Span,
   Button,
 } from "@chakra-ui/react";
 import FeedbackForm from "../components/ui/FeedbackForm";
 import { useState } from "react";
 import useGetTrendingMovie from "../hooks/useGetTrendingMovie";
+import { useColorModeValue } from "@/components/ui/color-mode";
 
 const TrendingMovie = () => {
-  const { trendingMovie: movie, reviews, error } = useGetTrendingMovie();
-  console.log("movie", movie);
-  console.log("review", reviews);
+  const { trendingMovie: movie, reviews } = useGetTrendingMovie();
+
+  const buttonBg = useColorModeValue("black", "white");
+  const buttonColor = useColorModeValue("white", "black");
 
   const [showForm, setShowForm] = useState(false);
 
@@ -139,6 +140,7 @@ const TrendingMovie = () => {
                       w={"full"}
                       p={3}
                       bg={"cyan.700"}
+                      color={buttonColor}
                       borderRadius={"md"}
                       fontSize={{ base: "md", md: "xl" }}
                     >
@@ -157,7 +159,12 @@ const TrendingMovie = () => {
                 </Text>
               )}
 
-              <Button mt={5} bg={"cyan"} onClick={handleButtonClick}>
+              <Button
+                mt={5}
+                bg={buttonBg}
+                color={buttonColor}
+                onClick={handleButtonClick}
+              >
                 {showForm ? "Hide review form" : "Add review"}
               </Button>
               {showForm && <FeedbackForm movieId={movie.movie_id} />}

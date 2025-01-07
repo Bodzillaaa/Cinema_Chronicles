@@ -35,9 +35,9 @@ const Navbar = () => {
               align="center"
               display={{ base: "none", md: "flex" }}
             >
-              <Link to="/api/movie/trending">Trending</Link>
-              <Link to="/api/user/watchlist">Watchlist</Link>
-              <Link to="/api/search/movie/:query">
+              <Link to="/trending">Random Movie</Link>
+              <Link to="/watchlist">Watchlist</Link>
+              <Link to="/:query">
                 <Search />
               </Link>
 
@@ -59,9 +59,9 @@ const Navbar = () => {
               display={{ base: "flex", md: "none" }}
               mt={4}
             >
-              <Link to="/api/movie/trending">Trending</Link>
-              <Link to="/api/user/watchlist">Watchlist</Link>
-              <Link to="/api/search/movie/:query">
+              <Link to="/trending">Random Movie</Link>
+              <Link to="/watchlist">Watchlist</Link>
+              <Link to="/:query">
                 <Search />
               </Link>
 

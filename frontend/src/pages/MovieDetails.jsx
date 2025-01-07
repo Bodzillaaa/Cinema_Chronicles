@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import Footer from "../components/ui/Footer";
 import Navbar from "../components/ui/Navbar";
 import useGetMovie from "../hooks/useGetMovie";
+import { useColorModeValue } from "@/components/ui/color-mode";
 import ReactPlayer from "react-player";
 import {
   Box,
@@ -14,17 +15,36 @@ import {
   Button,
 } from "@chakra-ui/react";
 import FeedbackForm from "../components/ui/FeedbackForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const MovieDetails = () => {
   const { id } = useParams();
   const { movie, reviews, error } = useGetMovie(id);
 
+  const buttonBg = useColorModeValue("black", "white");
+
   const [showForm, setShowForm] = useState(false);
+  const [actors, setActors] = useState([]);
 
   const handleButtonClick = () => {
     setShowForm(!showForm);
   };
+
+  useEffect(() => {
+    const fetchActors = async () => {
+      try {
+        const res = await axios.get(`/api/movie/actor/${id}`);
+        console.log(res.data.content);
+
+        setActors(res.data.content);
+      } catch (error) {
+        console.error("Error fetching actors", error);
+      }
+    };
+
+    fetchActors();
+  }, [id]);
 
   if (error) {
     return (
@@ -72,6 +92,7 @@ const MovieDetails = () => {
               <Image
                 alt={`${movie[0].title} poster`}
                 src={
+                  `${movie[0].posterUrl}` ||
                   "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 }
               />
@@ -141,7 +162,12 @@ const MovieDetails = () => {
                 fontSize={{ base: "md", md: "xl" }}
                 my={5}
               >
-                Cast: <Span fontWeight={"normal"}>dkfgjbkfgb</Span>
+                Cast:{" "}
+                <Span fontWeight={"normal"}>
+                  {actors.length > 0
+                    ? actors.map((actor) => actor.full_name).join(", ")
+                    : "No cast information available"}
+                </Span>
               </Text>
               <Text
                 fontWeight={"bold"}
@@ -187,7 +213,7 @@ const MovieDetails = () => {
                 </Text>
               )}
 
-              <Button mt={5} bg={"cyan"} onClick={handleButtonClick}>
+              <Button mt={5} bg={buttonBg} onClick={handleButtonClick}>
                 {showForm ? "Hide review form" : "Add review"}
               </Button>
               {showForm && <FeedbackForm movieId={movie[0].movie_id} />}

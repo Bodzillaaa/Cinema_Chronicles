@@ -77,28 +77,30 @@ export async function getMovieDetails(req, res) {
   }
 }
 
-export async function getDirectorDetails(req, res) {
+export async function getActorDetails(req, res) {
   const { id } = req.params;
+  console.log(id);
 
   try {
     if (!connection) {
       connection = await connectDB();
     }
 
-    const [director] = await connection.query(
-      "SELECT * FROM directors WHERE director_id = ?",
+    const [actor] = await connection.query(
+      `SELECT a.actor_id, a.full_name, a.dob, a.nationality, a.gender, a.net_worth, a.active_years
+        FROM actors a
+        JOIN movie_cast mc ON a.actor_id = mc.actor_id
+        WHERE mc.movie_id = ?;`,
       [id]
     );
 
-    if (director.length === 0) {
-      return res.status(404).json({ success: false, msg: "No director found" });
+    if (actor.length === 0) {
+      return res.status(404).json({ success: false, msg: "Actor not found" });
     }
 
-    res.status(200).json({ success: true, director: director });
+    res.status(200).json({ success: true, content: actor });
   } catch (error) {
-    if (error.message.includes("404")) {
-      return res.status(404).send(null);
-    }
+    console.error(error.message);
     res.status(500).send("Server Error");
   }
 }

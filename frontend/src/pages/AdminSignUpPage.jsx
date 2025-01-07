@@ -37,6 +37,7 @@ const AdminSignUpPage = () => {
 
   return (
     <Box
+      color={"white"}
       bgAttachment="fixed"
       bgImage="url(./auth_page_bg.jpg)"
       position={"relative"}

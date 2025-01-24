@@ -25,14 +25,19 @@ const AdminSignUpPage = () => {
 
   const handleSignUp = (e) => {
     e.preventDefault();
-    adminSignup({
-      adminPass: adminPassword,
-      email,
-      fname,
-      lname,
-      password,
-      dob,
-    });
+    try {
+      adminSignup({
+        adminPass: adminPassword,
+        email,
+        fname,
+        lname,
+        password,
+        dob,
+      });
+      window.location.href = "/adminlogin";
+    } catch (error) {
+      console.log("Error signing up", error);
+    }
   };
 
   return (

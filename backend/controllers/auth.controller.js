@@ -221,7 +221,7 @@ export async function login(req, res) {
     if (user.length === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "Invalid credentials" });
+        .json({ success: false, message: "You are not a registered member" });
     }
 
     const isMatch = await bcrypt.compare(password, user[0].password);

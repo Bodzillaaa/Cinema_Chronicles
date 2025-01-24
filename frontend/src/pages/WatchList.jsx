@@ -47,7 +47,7 @@ const WatchList = () => {
         watchListMovies.filter((movie) => movie.movie_id !== movieId)
       );
       toast.success(res.data.message, "Movie removed from watchlist.");
-      navigate("/");
+      window.location.reload();
     } catch (error) {
       console.error("Error deleting movie from watchlist:", error);
       toast.error("Failed to remove movie from watchlist.", error);

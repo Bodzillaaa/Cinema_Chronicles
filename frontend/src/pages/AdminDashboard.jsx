@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   return (
     <Container>
       <Box textAlign="center" py={10}>
-        <Heading>Welcome {user.user.first_name}!</Heading>
+        <Heading>Welcome {user.user.last_name}!</Heading>
         <Text>You are logged in as an Admin.</Text>
         <Button mt={4} onClick={logout}>
           Logout

@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuthUser } from "../store/authUser";
 
@@ -21,13 +21,12 @@ const SignUpPage = () => {
   const [dob, setDob] = useState("");
 
   const { signup } = useAuthUser();
-  const navigate = useNavigate();
 
   const handleSignUp = (e) => {
     e.preventDefault();
     try {
       signup({ email, fname, lname, password, dob });
-      navigate("/login");
+      window.location.href = "/login";
     } catch (error) {
       console.log("Error signing up", error);
     }

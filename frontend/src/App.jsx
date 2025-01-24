@@ -44,37 +44,13 @@ function App() {
         <Route path="/" element={!user ? <LoginPage /> : <HomePage />} />
 
         {/* User route */}
-        <Route
-          path="/signup"
-          element={!user ? <SignUpPage /> : <Navigate to={"/login"} />}
-        />
-        <Route
-          path="/login"
-          element={!user ? <LoginPage /> : <Navigate to={"/"} />}
-        />
+        <Route path="/signup" element={<SignUpPage />} />
+        <Route path="/login" element={<LoginPage />} />
 
         {/* Admin route */}
 
-        <Route
-          path="/adminsignup"
-          element={
-            !user || userRole !== "admin" ? (
-              <AdminSignUpPage />
-            ) : (
-              <Navigate to="/adminlogin" />
-            )
-          }
-        />
-        <Route
-          path="/adminlogin"
-          element={
-            !user || userRole !== "admin" ? (
-              <AdminLoginPage />
-            ) : (
-              <AdminDashboard />
-            )
-          }
-        />
+        <Route path="/adminsignup" element={<AdminSignUpPage />} />
+        <Route path="/adminlogin" element={<AdminLoginPage />} />
 
         <Route
           path="/dashboard"

@@ -2,21 +2,15 @@
 import { useState } from "react";
 import axios from "axios";
 import { Box, Input, Button, Textarea } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const FeedbackForm = ({ movieId }) => {
   const [rating, setRating] = useState("");
   const [review, setReview] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("got called");
-      console.log("movieId", movieId);
-      console.log(rating, review);
-
       const response = await axios.post(`/api/user/rating/${movieId}`, {
         rating,
         review,
@@ -24,8 +18,8 @@ const FeedbackForm = ({ movieId }) => {
       if (response.data.success) {
         toast.success(response.data.msg || "Feedback submitted successfully!");
         setTimeout(() => {
-          navigate("/"); // Redirect to home page
-        }, 2000); // Refresh the page
+          window.location.reload();
+        }, 1000);
       } else {
         toast.error(response.data.msg || "An error occurred.");
       }

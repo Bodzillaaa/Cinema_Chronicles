@@ -218,12 +218,7 @@ const MovieDetails = () => {
               </Button>
               {showForm && <FeedbackForm movieId={movie[0].movie_id} />}
 
-              <Box
-                fontWeight={"bold"}
-                // fontSize={{ base: "md", md: "xl" }}
-                my={5}
-                p={3}
-              >
+              <Box fontWeight={"bold"} my={5} p={3}>
                 <Text fontSize={{ base: "md", md: "xl" }} my={5}>
                   Trailer
                 </Text>

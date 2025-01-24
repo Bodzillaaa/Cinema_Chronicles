@@ -18,9 +18,13 @@ const LoginPage = () => {
 
   const { login } = useAuthUser();
 
-  const handleSignUp = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    login({ email, password });
+    try {
+      login({ email, password });
+    } catch (error) {
+      console.log("Error logging in", error);
+    }
   };
 
   return (
@@ -41,7 +45,7 @@ const LoginPage = () => {
           p={{ base: 4, md: 8 }}
           shadow={"md"}
         >
-          <form onSubmit={handleSignUp}>
+          <form onSubmit={handleLogin}>
             <Stack p={2} gap={{ base: 2, md: 4 }} h={"100%"} justify={"center"}>
               {/* email, fname, lname, password, dob */}
               <Text mb={5} color={"cyan"} fontSize={"2xl"} textAlign={"center"}>
@@ -71,7 +75,7 @@ const LoginPage = () => {
 
               <Box mt={3}>
                 <Button type="submit" colorPalette={"cyan"}>
-                  Register
+                  Login
                 </Button>
               </Box>
               <Box mt={5} textAlign={"center"}>

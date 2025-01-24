@@ -22,6 +22,7 @@ const AdminLoginPage = () => {
   const handleSignUp = (e) => {
     e.preventDefault();
     adminLogin({ adminPass: adminPassword, email, password });
+    window.location.href = "/dashboard";
   };
 
   return (
@@ -82,7 +83,7 @@ const AdminLoginPage = () => {
 
               <Box mt={3}>
                 <Button type="submit" colorPalette={"cyan"}>
-                  Register
+                  Log in
                 </Button>
               </Box>
               <Box textAlign={"center"}>

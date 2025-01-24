@@ -1,10 +1,11 @@
-import { Box, Button, Container, Flex, Image, Stack } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Stack } from "@chakra-ui/react";
 import { LogOut, Menu, Moon, Search, Sun } from "lucide-react";
 import { useColorMode } from "@/components/ui/color-mode";
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthUser } from "../../store/authUser";
+import CCLogo from "./cc_logo";
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -19,15 +20,16 @@ const Navbar = () => {
 
   return (
     <header>
-      <Box bg={bgColor} color={textColor} py={2} px={4} w="100%">
-        <Container>
+      <Box bg={bgColor} color={textColor}>
+        <Container p={{ base: 4, md: 8 }}>
           <Flex justify="space-between" align="center">
             <Link to="/">
-              <Image
+              {/* <Image
                 src="finallyfinal.png"
                 alt="Cinema Chronicles"
                 w={{ base: "100px", md: "150px" }}
-              />
+              /> */}
+              <CCLogo />
             </Link>
             <Stack
               direction={["column", "row"]}

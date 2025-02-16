@@ -19,80 +19,115 @@ import AllUsers from "./pages/AllUsers";
 import AllMovies from "./pages/AllMovies";
 
 function App() {
-  const { user, isCheckingAuth, authCheck } = useAuthUser();
-  const userRole = user?.user?.role;
+    const { user, isCheckingAuth, authCheck } = useAuthUser();
+    const userRole = user?.user?.role;
 
-  useEffect(() => {
-    authCheck();
-  }, [authCheck]);
+    useEffect(() => {
+        authCheck();
+    }, [authCheck]);
 
-  const bgColor = useColorModeValue("white", "black");
+    const bgColor = useColorModeValue("white", "black");
 
-  if (isCheckingAuth) {
+    if (isCheckingAuth) {
+        return (
+            <Box h={"full"}>
+                <AbsoluteCenter>
+                    <Spinner color='cyan' size={"xl"} />
+                </AbsoluteCenter>
+            </Box>
+        );
+    }
+
     return (
-      <Box h={"full"}>
-        <AbsoluteCenter>
-          <Spinner color="cyan" size={"xl"} />
-        </AbsoluteCenter>
-      </Box>
+        <Box minH={"100vh"} bg={bgColor}>
+            <Routes>
+                <Route
+                    path='/'
+                    element={!user ? <Navigate to='/login' /> : <HomePage />}
+                />
+
+                {/* User route */}
+                <Route
+                    path='/signup'
+                    element={!user ? <SignUpPage /> : <Navigate to='/' />}
+                />
+                <Route
+                    path='/login'
+                    element={!user ? <LoginPage /> : <Navigate to='/' />}
+                />
+
+                {/* Admin route */}
+
+                <Route
+                    path='/adminsignup'
+                    element={
+                        !user ? (
+                            <AdminSignUpPage />
+                        ) : (
+                            <Navigate to={"/dashboard"} />
+                        )
+                    }
+                />
+                <Route
+                    path='/adminlogin'
+                    element={
+                        !user ? (
+                            <AdminLoginPage />
+                        ) : (
+                            <Navigate to={"/dashboard"} />
+                        )
+                    }
+                />
+
+                <Route
+                    path='/dashboard'
+                    element={
+                        !user && userRole !== "admin" ? (
+                            <Navigate to='/adminlogin' />
+                        ) : (
+                            <AdminDashboard />
+                        )
+                    }
+                />
+
+                <Route
+                    path='/admin/users'
+                    element={
+                        !user || userRole !== "admin" ? (
+                            <AdminLoginPage />
+                        ) : (
+                            <AllUsers />
+                        )
+                    }
+                />
+                <Route
+                    path='/admin/movies'
+                    element={
+                        !user || userRole !== "admin" ? (
+                            <AdminLoginPage />
+                        ) : (
+                            <AllMovies />
+                        )
+                    }
+                />
+                {/* <Route path="/admin/addmovie" element={<AllMovies />} /> */}
+
+                {/* Forgot pass route */}
+                <Route path='/forgotpassword' element={<ForgotPassword />} />
+                <Route path='/details/:id' element={<MovieDetails />} />
+                <Route path='/trending' element={<TrendingMovie />} />
+
+                <Route
+                    path='/:query'
+                    element={user ? <SearchPage /> : <Navigate to='/login' />}
+                />
+
+                <Route path='/watchlist' element={<WatchList />}></Route>
+            </Routes>
+
+            <Toaster />
+        </Box>
     );
-  }
-
-  return (
-    <Box minH={"100vh"} bg={bgColor}>
-      <Routes>
-        <Route path="/" element={!user ? <LoginPage /> : <HomePage />} />
-
-        {/* User route */}
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/login" element={<LoginPage />} />
-
-        {/* Admin route */}
-
-        <Route path="/adminsignup" element={<AdminSignUpPage />} />
-        <Route path="/adminlogin" element={<AdminLoginPage />} />
-
-        <Route
-          path="/dashboard"
-          element={
-            !user || userRole !== "admin" ? (
-              <AdminLoginPage />
-            ) : (
-              <AdminDashboard />
-            )
-          }
-        />
-
-        <Route
-          path="/admin/users"
-          element={
-            !user || userRole !== "admin" ? <AdminLoginPage /> : <AllUsers />
-          }
-        />
-        <Route
-          path="/admin/movies"
-          element={
-            !user || userRole !== "admin" ? <AdminLoginPage /> : <AllMovies />
-          }
-        />
-        {/* <Route path="/admin/addmovie" element={<AllMovies />} /> */}
-
-        {/* Forgot pass route */}
-        <Route path="/forgotpassword" element={<ForgotPassword />} />
-        <Route path="/details/:id" element={<MovieDetails />} />
-        <Route path="/trending" element={<TrendingMovie />} />
-
-        <Route
-          path="/:query"
-          element={user ? <SearchPage /> : <Navigate to="/login" />}
-        />
-
-        <Route path="/watchlist" element={<WatchList />}></Route>
-      </Routes>
-
-      <Toaster />
-    </Box>
-  );
 }
 
 export default App;

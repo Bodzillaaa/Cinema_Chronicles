@@ -54,7 +54,6 @@ export const useAuthUser = create((set) => ({
         } catch (error) {
             toast.error(error.response.data.message || "Login failed");
             set({ user: null, isLoggingIn: false });
-            console.log(error);
         }
     },
 
@@ -104,7 +103,7 @@ export const useAuthUser = create((set) => ({
             const response = await axios.get("/api/auth/check");
             set({ user: response.data, isCheckingAuth: false });
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             set({ user: null, isCheckingAuth: false });
         }
     },

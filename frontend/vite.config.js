@@ -8,21 +8,21 @@ const __dirname = path.dirname(__filename);
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-      },
+    plugins: [react()],
+    server: {
+        proxy: {
+            "/api": {
+                target: "http://localhost:5000",
+                changeOrigin: true,
+            },
+        },
     },
-  },
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "./src"),
+        },
     },
-  },
-  build: {
-    chunkSizeWarningLimit: 1000, // Increase to 1000 kB
-  },
+    build: {
+        chunkSizeWarningLimit: 1000, // Increase to 1000 kB
+    },
 });

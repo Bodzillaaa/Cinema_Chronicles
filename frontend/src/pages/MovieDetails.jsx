@@ -35,7 +35,6 @@ const MovieDetails = () => {
         const fetchActors = async () => {
             try {
                 const res = await axios.get(`/api/movie/actor/${id}`);
-                console.log(res.data.content);
 
                 setActors(res.data.content);
             } catch (error) {

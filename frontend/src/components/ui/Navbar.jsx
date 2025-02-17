@@ -5,7 +5,7 @@ import { useColorMode } from "@/components/ui/color-mode";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthUser } from "../../store/authUser";
-import CCLogo from "./cc_logo";
+import CCLogo from "./CCLogo";
 
 const Navbar = () => {
     const { colorMode, toggleColorMode } = useColorMode();

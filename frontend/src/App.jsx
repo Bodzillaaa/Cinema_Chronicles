@@ -15,7 +15,6 @@ import MovieDetails from "./pages/MovieDetails";
 import TrendingMovie from "./pages/TrendingMovie";
 import SearchPage from "./pages/SearchPage";
 import WatchList from "./pages/WatchList";
-import AllUsers from "./pages/AllUsers";
 import AllMovies from "./pages/AllMovies";
 
 function App() {
@@ -90,16 +89,6 @@ function App() {
                     }
                 />
 
-                <Route
-                    path='/admin/users'
-                    element={
-                        !user || userRole !== "admin" ? (
-                            <AdminLoginPage />
-                        ) : (
-                            <AllUsers />
-                        )
-                    }
-                />
                 <Route
                     path='/admin/movies'
                     element={

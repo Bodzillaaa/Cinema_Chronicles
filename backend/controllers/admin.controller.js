@@ -8,13 +8,14 @@ export async function getUsers(req, res) {
             connection = await connectDB();
         }
 
-        const [users] = await connection.query("SELECT * FROM users");
+        let [users] = await connection.query("SELECT * FROM users");
 
         if (users.length === 0) {
             return res
                 .status(404)
                 .json({ success: false, msg: "No users found" });
         }
+        users = users.filter((user) => user.users_id !== req.user.users_id);
 
         res.status(200).json({ success: true, content: users });
     } catch (error) {

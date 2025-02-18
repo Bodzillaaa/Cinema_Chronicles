@@ -30,6 +30,8 @@ const MovieCard = ({ movie }) => {
             <Card.Root h={"xl"} shadow={"xl"}>
                 <Image
                     src={movie.posterUrl || "/download.jpg"}
+                    w={"100%"}
+                    h={"50%"}
                     alt={`${movie.title} poster`}
                 />
                 <Card.Body gap='2'>
